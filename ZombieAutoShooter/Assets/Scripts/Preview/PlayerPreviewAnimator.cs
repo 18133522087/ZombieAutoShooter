@@ -51,7 +51,13 @@ public class PlayerPreviewAnimator : MonoBehaviour
         Attach(pivotArmR, "Arm_R", "Hand_R");
 
         // 武器：挂在 WeaponSocket 下，但每帧强制枪口朝角色正前方（不跟随举臂角度）
-        weaponSocket = FindDeep("WeaponSocket");
+        // 注意：Hand_R 已经挂到 pivotArmR 下，不在 root 层级里，所以要从 wrapper 往下找
+        Transform searchRoot = wrapper != null ? wrapper : transform;
+        Transform[] allT = searchRoot.GetComponentsInChildren<Transform>(true);
+        for (int i = 0; i < allT.Length; i++)
+        {
+            if (allT[i].name == "WeaponSocket") weaponSocket = allT[i];
+        }
         if (weaponSocket != null && weaponSocket.childCount > 0)
         {
             weapon = weaponSocket.GetChild(0);
