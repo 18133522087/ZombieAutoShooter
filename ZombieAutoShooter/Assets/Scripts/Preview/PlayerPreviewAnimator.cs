@@ -46,7 +46,7 @@ public class PlayerPreviewAnimator : MonoBehaviour
         Attach(pivotLegL, "Leg_L", "Boot_L");
         Attach(pivotLegR, "Leg_R", "Boot_R");
         Attach(pivotArmL, "Arm_L", "Hand_L");
-        Attach(pivotArmR, "Arm_R", "Hand_R", "GunBody", "GunGrip", "GunSight");
+        Attach(pivotArmR, "Arm_R", "Hand_R");
     }
 
     private Transform FindDeep(string n)

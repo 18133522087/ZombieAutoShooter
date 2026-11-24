@@ -9,6 +9,7 @@ Blender 5.2 headless：生成 3 个僵尸并分别导出 FBX。
 import bpy
 import math
 import os
+from mathutils import Vector
 
 OUT_DIR = r"D:\MYGAME\ZombieAutoShooter\ArtSource\Enemies"
 os.makedirs(OUT_DIR, exist_ok=True)
@@ -99,6 +100,21 @@ def cone(parts, name, r1, r2, h, loc, rot=(0, 0, 0), m=None, verts=8):
     bpy.ops.mesh.primitive_cone_add(vertices=verts, radius1=r1, radius2=r2, depth=h, location=loc, rotation=rot)
     o = bpy.context.active_object
     o.name = name
+    assign(o, m)
+    parts.append(o)
+    return o
+
+
+def cone_dir(parts, name, r1, length, base, direction, m=None, verts=7):
+    """从 base 点沿 direction 方向伸出的尖刺（底面嵌在 base 里，避免悬空）。"""
+    d = Vector(direction).normalized()
+    center = Vector(base) + d * (length * 0.5)
+    bpy.ops.mesh.primitive_cone_add(vertices=verts, radius1=r1, radius2=0.0, depth=length,
+                                    location=(center.x, center.y, center.z))
+    o = bpy.context.active_object
+    o.name = name
+    o.rotation_mode = 'QUATERNION'
+    o.rotation_quaternion = Vector((0.0, 0.0, 1.0)).rotation_difference(d)
     assign(o, m)
     parts.append(o)
     return o
@@ -249,10 +265,15 @@ def build_boss():
         box(parts, "Forearm_" + side, (0.250, 0.270, 0.520), (0.600 * sx, -0.310, 1.700),
             rot=(math.radians(-42), 0, 0), m=M_SKIN_BOSS, b=0.05, seg=3)
         sph(parts, "Fist_" + side, 0.190, (0.615 * sx, -0.560, 1.480), m=M_SKIN_BOSS, segs=14, rings=8)
+        # 前臂外侧骨刺：从肘部外侧向外前方伸出，底面嵌进前臂
         for k in range(2):
-            cone(parts, "Spike_%s_%d" % (side, k), 0.045, 0.0, 0.170,
-                 (0.700 * sx, -0.520 + k * 0.130, 1.850 + k * 0.130),
-                 rot=(math.radians(-70), 0, 0), m=M_BONE, verts=6)
+            zoff = -0.13 + k * 0.26
+            base_f = (0.600 * sx + 0.10 * sx, -0.310 + 0.669 * zoff, 1.700 + 0.743 * zoff)
+            cone_dir(parts, "ForearmSpike_%s_%d" % (side, k), 0.050, 0.210,
+                     base_f, (0.85 * sx, -0.45, 0.25), m=M_BONE, verts=6)
+        # 肩部骨刺：从肩球外侧向外上方
+        cone_dir(parts, "ShoulderSpike_%s" % side, 0.060, 0.300,
+                 (0.560 * sx, -0.060, 2.400), (0.70 * sx, -0.22, 0.68), m=M_BONE, verts=7)
 
     cyl(parts, "Neck", 0.140, 0.160, (0, -0.070, 2.520), m=M_SKIN_BOSS)
     sph(parts, "Head", 0.290, (0, -0.110, 2.800), scale=(1.0, 0.98, 1.05), m=M_SKIN_BOSS, segs=16, rings=9)
@@ -261,16 +282,22 @@ def build_boss():
     for sx in (-1, 1):
         side = "L" if sx < 0 else "R"
         sph(parts, "Eye_" + side, 0.048, (0.108 * sx, -0.375, 2.830), m=M_EYE, segs=10, rings=6)
-        cone(parts, "Horn_" + side, 0.075, 0.0, 0.340,
-             (0.230 * sx, -0.030, 3.030), rot=(math.radians(-18), 0, math.radians(38 * sx)),
-             m=M_BONE, verts=7)
+        # 弯角：底面嵌进头骨
+        cone_dir(parts, "Horn_" + side, 0.075, 0.340,
+                 (0.121 * sx, -0.132, 2.983), (0.55 * sx, -0.10, 0.83), m=M_BONE, verts=7)
 
     box(parts, "Mouth", (0.240, 0.030, 0.070), (0, -0.400, 2.690), m=M_HAIR, b=0.008, seg=1)
     for i in range(4):
         box(parts, "Tooth_%d" % i, (0.035, 0.030, 0.050), (-0.075 + i * 0.050, -0.410, 2.710), m=M_BONE, b=0.006, seg=1)
+    # 背部骨刺：底面嵌进后背，向上后方伸出
+    back_defs = [
+        ((0.0, 0.190, 2.330), (0.0, 0.55, 0.84), 0.36),
+        ((0.0, 0.205, 2.070), (0.0, 0.62, 0.78), 0.32),
+        ((0.0, 0.215, 1.810), (0.0, 0.68, 0.73), 0.28),
+    ]
     for i in range(3):
-        cone(parts, "BackSpike_%d" % i, 0.080, 0.0, 0.300, (0, 0.280, 2.180 - i * 0.230),
-             rot=(math.radians(60), 0, 0), m=M_BONE, verts=7)
+        cone_dir(parts, "BackSpike_%d" % i, 0.075, back_defs[i][2],
+                 back_defs[i][0], back_defs[i][1], m=M_BONE, verts=7)
     box(parts, "Scar", (0.320, 0.020, 0.040), (0.10, -0.275, 1.930), rot=(0, 0, math.radians(22)), m=M_BLOOD, b=0.008, seg=1)
 
     finalize(parts, "BossZombie")

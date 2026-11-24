@@ -126,13 +126,16 @@ parts.append(box("PackTop", (0.220, 0.130, 0.080), (0, 0.230, 1.345), mat=M_PACK
 parts.append(box("PackPocket", (0.200, 0.060, 0.140), (0, 0.320, 1.090), mat=M_PACK, bev=0.02))
 
 # ---------- 肩 + 手臂 + 手 ----------
+hands = {}
 for sx in (-1, 1):
     side = "L" if sx < 0 else "R"
     ang = math.radians(10) * (-1 if sx < 0 else 1)
     parts.append(sphere("Shoulder_" + side, 0.105, (0.205 * sx, 0.0, 1.345), mat=M_SLEEVE, segs=12, rings=7))
     parts.append(box("Arm_" + side, (0.135, 0.150, 0.400), (0.288 * sx, 0.0, 1.105),
                      rot=(0, ang, 0), mat=M_SLEEVE, bev=0.03))
-    parts.append(sphere("Hand_" + side, 0.080, (0.318 * sx, -0.015, 0.880), mat=M_SKIN))
+    hand = sphere("Hand_" + side, 0.080, (0.318 * sx, -0.015, 0.880), mat=M_SKIN)
+    parts.append(hand)
+    hands[side] = hand
 
 # ---------- 脖子 + 围巾 + 头 ----------
 parts.append(cyl("Neck", 0.070, 0.110, (0, 0, 1.395), mat=M_SKIN))
@@ -151,11 +154,13 @@ parts.append(sphere("CapTop", 0.262, (0, 0.010, 1.800), scale=(1.0, 1.0, 0.42), 
 parts.append(box("CapVisor", (0.300, 0.190, 0.035), (0, -0.230, 1.755),
                  rot=(math.radians(-6), 0, 0), mat=M_CAP, bev=0.012, seg=1))
 
-# ---------- 手枪（右手，朝前）----------
-parts.append(box("GunBody", (0.075, 0.340, 0.110), (0.330, -0.175, 0.900), mat=M_GUN, bev=0.012, seg=1))
-parts.append(box("GunGrip", (0.062, 0.085, 0.165), (0.330, -0.015, 0.830),
-                 rot=(math.radians(14), 0, 0), mat=M_GUN, bev=0.012, seg=1))
-parts.append(box("GunSight", (0.022, 0.050, 0.030), (0.330, -0.330, 0.945), mat=M_GUN, bev=0.005, seg=1))
+# ---------- 武器挂点（角色本身不持枪：开局空手，手枪模型由游戏运行时挂上）----------
+bpy.ops.object.empty_add(type='ARROWS', location=(0.318, -0.015, 0.880))
+weapon_socket = bpy.context.active_object
+weapon_socket.name = "WeaponSocket"
+weapon_socket.parent = hands["R"]
+weapon_socket.matrix_parent_inverse = hands["R"].matrix_world.inverted()
+weapon_socket.empty_display_size = 0.06
 
 # ---------- 组织层级 ----------
 bpy.ops.object.empty_add(type='PLAIN_AXES', location=(0, 0, 0))
