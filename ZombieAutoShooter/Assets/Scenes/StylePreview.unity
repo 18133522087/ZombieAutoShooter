@@ -797,16 +797,20 @@ PrefabInstance:
       value: Pistol_Equipped
       objectReference: {fileID: 0}
     - target: {fileID: 4265265150166653910, guid: 62363b4ea5693ee40b12ef94aea56dff, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.64971
+      objectReference: {fileID: 0}
+    - target: {fileID: 4265265150166653910, guid: 62363b4ea5693ee40b12ef94aea56dff, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4265265150166653910, guid: 62363b4ea5693ee40b12ef94aea56dff, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0.087
       objectReference: {fileID: 0}
     - target: {fileID: 4265265150166653910, guid: 62363b4ea5693ee40b12ef94aea56dff, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0.038
       objectReference: {fileID: 0}
     - target: {fileID: 4265265150166653910, guid: 62363b4ea5693ee40b12ef94aea56dff, type: 3}
       propertyPath: m_LocalRotation.w
