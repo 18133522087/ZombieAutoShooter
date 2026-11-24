@@ -21,6 +21,8 @@ public class PlayerPreviewAnimator : MonoBehaviour
 
     private Transform wrapper;
     private Transform pivotLegL, pivotLegR, pivotArmL, pivotArmR;
+    private Transform weaponSocket;
+    private Transform weapon;
     private Vector3 basePos;
     private float t;
 
@@ -47,6 +49,13 @@ public class PlayerPreviewAnimator : MonoBehaviour
         Attach(pivotLegR, "Leg_R", "Boot_R");
         Attach(pivotArmL, "Arm_L", "Hand_L");
         Attach(pivotArmR, "Arm_R", "Hand_R");
+
+        // 武器：挂在 WeaponSocket 下，但每帧强制枪口朝角色正前方（不跟随举臂角度）
+        weaponSocket = FindDeep("WeaponSocket");
+        if (weaponSocket != null && weaponSocket.childCount > 0)
+        {
+            weapon = weaponSocket.GetChild(0);
+        }
     }
 
     private Transform FindDeep(string n)
@@ -107,5 +116,15 @@ public class PlayerPreviewAnimator : MonoBehaviour
         if (pivotLegR != null) pivotLegR.localRotation = Quaternion.Euler(-swing * legSwing, 0f, 0f);
         if (pivotArmL != null) pivotArmL.localRotation = Quaternion.Euler(-swing * armSwing, 0f, 0f);
         if (pivotArmR != null) pivotArmR.localRotation = Quaternion.Euler(aimArmAngle + swing * 4f, 0f, 0f);
+    }
+
+    private void LateUpdate()
+    {
+        // 让手里的枪保持水平朝前（只跟随身体朝向，不跟随举臂的俯仰）
+        if (weapon != null && weaponSocket != null && wrapper != null)
+        {
+            weapon.position = weaponSocket.position;
+            weapon.rotation = wrapper.rotation * Quaternion.Euler(-90f, 0f, 0f);
+        }
     }
 }
