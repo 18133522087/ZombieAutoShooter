@@ -1,0 +1,54 @@
+# ===== Unity 生成目录（所有层级） =====
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+[Mm]emoryCaptures/
+[Rr]ecordings/
+[Cc]rashlytics/
+
+# ===== Unity 生成文件 =====
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+sysinfo.txt
+*.apk
+*.aab
+*.unitypackage
+*.app
+
+# ===== IDE / 编辑器 =====
+.vs/
+.idea/
+.vscode/
+*.sln.DotSettings.user
+*.DotSettings
+
+# ===== 操作系统 =====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== 本项目：第三方参考资料不入库 =====
+AISkills-master/
+
+# ===== 本地临时/探测产物 =====
+*.raw
+*.log
